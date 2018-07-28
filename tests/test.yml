@@ -1,5 +1,5 @@
 ---
-- name: Deploy repository to build repository
+- name: Run build.
   hosts: localhost
   roles:
     - role: build
