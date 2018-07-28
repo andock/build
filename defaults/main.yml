@@ -1,7 +1,7 @@
 ---
 # defaults file for drupal-git-deployment
 
-andock_home: "{{ ansible_env.HOME }}/andock"
+andock_home: "~/andock"
 
 build_path: "{{ andock_home }}/build/{{ project_name }}/{{ project_name }}--{{ branch }}__build"
 
@@ -11,7 +11,7 @@ checkout_path: "{{ build_path }}"
 
 push_path: "{{ build_path }}/andock-push"
 
-target_branch_suffix: "-build"
+target_branch_suffix: ""
 
 target_branch: "{{ branch }}{{ target_branch_suffix }}"
 
