@@ -16,6 +16,21 @@
     tags: checkout
     when: git_source_repository_path is defined
 
+  - name: Check if a local build artifact repository exists.
+    stat:
+      path: "{{ git_target_repository_path }}"
+    register: target_repository_exists
+
+  - name: Create local build artifact repository.
+    command: "git init --bare {{ git_target_repository_path }}"
+    when: target_repository_exists.stat.exists == False
+
+  - name: Fin up.
+    command: "fin up"
+    args:
+      chdir: "{{ build_path }}"
+    when: fin_up == True
+
   - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: "Remove old push directory. (If one exists)"
@@ -87,10 +102,26 @@
     tags: push
 
   always:
-    - name: "Prepare clean up"
-      file: dest="{{ push_path }}" mode=777  recurse=yes
+    - name: Stop services.
+      command: "fin stop"
+      args:
+        warn: false
+        chdir: "{{ build_path }}"
+      ignore_errors: yes
+      when: fin_up == True
 
-    - name: "Clean up: Remove push directory"
+    - name: Remove services.
+      command: "fin rm -f"
+      args:
+        warn: false
+        chdir: "{{ build_path }}"
+      ignore_errors: yes
+      when: fin_up == True
+
+    - name: "Prepare clean up"
+      file: dest="{{ build_path }}" mode=777  recurse=yes
+
+    - name: "Clean up: Remove build directory"
       file:
         state: absent
-        path: "{{ push_path }}"
+        path: "{{ build_path }}"
