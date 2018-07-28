@@ -23,7 +23,7 @@ branches:
 
 before_install:
   # Install php and curl
-  - ./before_install.sh
+  - sudo curl -fsSL get.docksal.io | sh
 
 install:
   # Install Ansible.

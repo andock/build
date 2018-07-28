@@ -2,15 +2,17 @@ andock-build (A drupal docksal build script.)
 =========
 
 **andock-build** is a Ansible role which:
-* Checks out a php repository (e.g. from github)
+* Checks out.
+* Start docksal services.
 * Runs build tasks (like composer, npm etc.).  
-* Pushes all build artifacts to a target build repository (can be a different one like Acquia or the same. Andock CI pushes to {{ branch }}-build branch.)  
+* Pushes all build artifacts to a target artifact repository.  
+* Remove docksal services.
   
 
 Requirements
 ------------
 
-In order to build your apps with Andock CI, you will need:
+In order to build your apps with Andock, you will need:
 
 * Ansible in your deploy machine
 * build tools like composer or something else
@@ -32,10 +34,10 @@ vars:
 Installation
 ------------
 
-Andock-CI is an Ansible role distributed globally using [Ansible Galaxy](https://galaxy.ansible.com/). In order to install Andock-CI role you can use the following command.
+Andock is an Ansible role distributed globally using [Ansible Galaxy](https://galaxy.ansible.com/). In order to install Andock role you can use the following command.
 
 ```
-$ ansible-galaxy install andock.andock-build
+$ ansible-galaxy install andock.build
 ```
 
 Update
@@ -44,7 +46,7 @@ Update
 If you want to update the role, you need to pass **--force** parameter when installing. Please, check the following command:
 
 ```
-$ ansible-galaxy install --force andock.andock-build
+$ ansible-galaxy install --force andock.build
 ```
 
 Dependencies
@@ -59,11 +61,10 @@ Including an example of how to use your role (for instance, with variables passe
 
     - name: Deploy repository to build repository
       hosts: localhost
-      remote_user: cw
+      
       roles:
-        - role: andock-build
+        - role: build
           git_source_repository_path: git@github.com:andock/drupal-8-demo.git
-          git_target_repository_path: git@github.com:andock/drupal-8-demo-build.git
           build_path: ~/ansible
           branch: "master"
           hook_build_tasks: "hooks/build_tasks.yml"
