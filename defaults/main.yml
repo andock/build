@@ -7,7 +7,7 @@ project_path: "{{ andock_home }}/projects/{{ project_name }}"
 
 build_path: "{{ project_path }}/build/{{ project_name }}--{{ branch }}__build"
 
-git_target_repository_path:  "{{ project_path }}/repository/{{ project_name }}.git"
+git_artifact_repository_path:  "{{ project_path }}/repository/{{ project_name }}.git"
 
 checkout_path: "{{ build_path }}"
 

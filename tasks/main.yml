@@ -8,22 +8,22 @@
 
   - name: "Clone or pull repository"
     git:
-      repo: "{{ git_source_repository_path }}"
+      repo: "{{ git_repository_path }}"
       dest: "{{ checkout_path }}"
       version: "{{ branch }}"
       accept_hostkey: true
       force: yes
     tags: checkout
-    when: git_source_repository_path is defined
+    when: git_repository_path is defined
 
   - name: Check if a local build artifact repository exists.
     stat:
-      path: "{{ git_target_repository_path }}"
-    register: target_repository_exists
+      path: "{{ git_artifact_repository_path }}"
+    register: artifact_repository_exists
 
   - name: Create local build artifact repository.
-    command: "git init --bare {{ git_target_repository_path }}"
-    when: target_repository_exists.stat.exists == False
+    command: "git init --bare {{ git_artifact_repository_path }}"
+    when: artifact_repository_exists.stat.exists == False
 
   - name: Fin up.
     command: "fin up"
@@ -58,8 +58,8 @@
     tags: prepare_commit
     no_log: true
 
-  - name: "Prepare commit: Add git remote \"{{ git_target_repository_path }}\""
-    command: git remote add remote "{{ git_target_repository_path }}" warn=no
+  - name: "Prepare commit: Add git remote \"{{ git_artifact_repository_path }}\""
+    command: git remote add remote "{{ git_artifact_repository_path }}" warn=no
     args:
       warn: false
       chdir: "{{ push_path }}"

@@ -4,6 +4,6 @@
   roles:
     - role: build
       project_name: "demo-project"
-      git_source_repository_path: https://github.com/andock/demo-project.git
+      git_repository_path: https://github.com/andock/demo-project.git
       branch: "master"
       hook_build_tasks: "hooks/build_tasks.yml"
