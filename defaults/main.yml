@@ -3,9 +3,11 @@
 
 andock_home: "{{ ansible_env.HOME }}/andock"
 
-build_path: "{{ andock_home }}/build/{{ project_name }}/{{ project_name }}--{{ branch }}__build"
+project_path: "{{ andock_home }}/projects/{{ project_name }}"
 
-git_target_repository_path:  "{{ andock_home }}/repositories/{{ project_name }}.git"
+build_path: "{{ project_path }}/build/{{ project_name }}--{{ branch }}__build"
+
+git_target_repository_path:  "{{ project_path }}/repository/{{ project_name }}.git"
 
 checkout_path: "{{ build_path }}"
 
@@ -15,4 +17,4 @@ target_branch_suffix: ""
 
 target_branch: "{{ branch }}{{ target_branch_suffix }}"
 
-fin_up: true
+fin_up: false

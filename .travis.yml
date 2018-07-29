@@ -36,14 +36,14 @@ script:
   # Run the role/playbook with ansible-playbook.
   - ansible-playbook -i tests/inventory tests/test.yml --connection=local
 
-  # Run the role/playbook again, checking to make sure it's idempotent.
-  # - >
-  #  ansible-playbook -i tests/inventory tests/test.yml --connection=local
-  #  | grep -q 'changed=0.*failed=0'
-  #  && (echo 'Idempotence test: pass' && exit 0)
-  #  || (echo 'Idempotence test: fail' && exit 1)
-
-  # - if [ "$ANSIBLE_VERSION" = "latest" ]; then ansible-lint tests/test.yml || true; fi
+  # Check if project folder exists
+  - cd /home/travis/andock/demo-project
+  # Check if build folder exists
+  - cd build
+  - cd ..
+  # Check if repository exists
+  - cd repository
+  - ls demo-project.git
 
 cache:
   - pip
