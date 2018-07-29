@@ -16,20 +16,20 @@
     tags: checkout
     when: git_repository_path is defined
 
-  - name: Check if a local build artifact repository exists.
+  - name: "Check if a local build artifact repository exists"
     stat:
       path: "{{ git_artifact_repository_path }}"
     register: artifact_repository_exists
 
-  - name: Create local build artifact repository.
+  - name: "Create local build artifact repository"
     command: "git init --bare {{ git_artifact_repository_path }}"
     when: artifact_repository_exists.stat.exists == False
 
-  - name: Fin up.
+  - name: "Fin up"
     command: "fin up"
     args:
       chdir: "{{ build_path }}"
-    when: fin_up == True
+    when: fin_up_while_build == True
 
   - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
@@ -108,7 +108,7 @@
         warn: false
         chdir: "{{ build_path }}"
       ignore_errors: yes
-      when: fin_up == True
+      when: fin_up_while_build == True
 
     - name: Remove services.
       command: "fin rm -f"
@@ -116,7 +116,7 @@
         warn: false
         chdir: "{{ build_path }}"
       ignore_errors: yes
-      when: fin_up == True
+      when: fin_up_while_build == True
 
     - name: "Prepare clean up"
       file: dest="{{ build_path }}" mode=777  recurse=yes
