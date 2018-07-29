@@ -37,7 +37,7 @@ script:
   - ansible-playbook -i tests/inventory tests/test.yml --connection=local
 
   # Check if project folder exists
-  - cd /home/travis/andock/demo-project
+  - cd /home/travis/andock/projects/demo-project
   # Check if build folder exists
   - cd build
   - cd ..
