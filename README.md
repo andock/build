@@ -73,7 +73,7 @@ Including an example of how to use your role (for instance, with variables passe
 Handling .gitignore 
 ----------------
 
-You can mark parts in your .gitignore files with "BEGIN REMOVE ANDOCK-CI" --- END REMOVE ANDOCK-CI.
+You can mark parts in your .gitignore files with "BEGIN REMOVE ANDOCK" --- END REMOVE ANDOCK-CI.
 andock will remove that blocks before it will be commited to target repository
  
 

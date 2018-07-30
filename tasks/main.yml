@@ -49,10 +49,10 @@
     ignore_errors: yes
     tags: prepare_commit
 
-  - name: "Prepare commit: Remove marker in gitignore \"#### BEGIN REMOVE ANDOCK-CI ...\""
+  - name: "Prepare commit: Remove marker in gitignore \"#### BEGIN REMOVE ANDOCK ...\""
     blockinfile:
       path: "{{ push_path }}/{{ item }}"
-      marker: "#### {mark} REMOVE ANDOCK-CI ###"
+      marker: "#### {mark} REMOVE ANDOCK ###"
       content: ""
     with_items: "{{ gitignore_to_check.stdout_lines }}"
     tags: prepare_commit
