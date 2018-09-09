@@ -120,8 +120,10 @@
 
     - name: "Prepare clean up"
       file: dest="{{ build_path }}" mode=777  recurse=yes
+      when: cache_build == False
 
     - name: "Clean up: Remove build directory"
       file:
         state: absent
         path: "{{ build_path }}"
+      when: cache_build == False
