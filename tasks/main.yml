@@ -95,7 +95,7 @@
       chdir: "{{ push_path }}"
     tags: commit
 
-  - name: "BAAAM! Push it"
+  - name: "Deploy to artifact repository"
     command: "git push --force remote {{ branch }}:{{ target_branch }}"
     args:
       chdir: "{{ push_path }}"

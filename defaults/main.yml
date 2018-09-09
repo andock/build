@@ -5,7 +5,7 @@ andock_home: "{{ ansible_env.HOME }}/andock"
 
 project_home: "{{ andock_home }}/projects/{{ project_name }}"
 
-build_path: "{{ project_home }}/build/{{ project_name }}--{{ branch }}__build"
+build_path: "{{ project_home }}/{{ project_name }}--{{ branch }}/{{ project_name }}--{{ branch }}__build"
 
 git_artifact_repository_path:  "{{ project_home }}/repository/{{ project_name }}.git"
 
