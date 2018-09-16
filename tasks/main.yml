@@ -101,6 +101,13 @@
       chdir: "{{ push_path }}"
     tags: push
 
+  - name: "Run build done tasks."
+    import_tasks: "{{ hook_build_done_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+
+  rescue:
+  - name: "Run build failed tasks."
+    import_tasks: "{{ hook_build_failed_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+
   always:
     - name: Stop services.
       command: "fin stop"
