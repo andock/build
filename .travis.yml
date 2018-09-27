@@ -41,10 +41,10 @@ script:
   # Check if repository exists
   - cd repository
   - ls demo-project.git
-  - cd ..
+  - cd ~
   - mkdir test_checkout
   - cd test_checkout
-  - git clone ~/repository/demo-project.git
+  - git clone /home/travis/andock/projects/demo-project/repository/demo-project.git
   - cd demo-project
   - cd vendor
 
