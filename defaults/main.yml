@@ -20,3 +20,6 @@ fin_up_during_build: false
 cache_build: true
 
 remove_gitignore_during_build: true
+
+# Deprecated use build_path instead.
+checkout_path: build_path
