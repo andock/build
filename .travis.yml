@@ -41,6 +41,13 @@ script:
   # Check if repository exists
   - cd repository
   - ls demo-project.git
+  - cd ..
+  - mkdir test_checkout
+  - cd test_checkout
+  - git clone ~/repository/demo-project.git
+  - cd demo-project
+  - cd vendor
+
 
 cache:
   - pip
