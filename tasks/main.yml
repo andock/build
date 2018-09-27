@@ -33,12 +33,12 @@
 
   - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
-  - name: "Cleanup stage directory."
+  - name: "Remove stage."
     file:
       state: absent
       path: "{{ stage_path }}"
 
-  - name: "Copy to stage directory"
+  - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
 
   - name: "Prepare commit: Register gitignores"
@@ -61,7 +61,7 @@
       - remove_gitignore_during_build == False
 
   - name: "Prepare commit: Remove gitignore files"
-    shell: "find . -type f -name .gitignore -exec rm {} \;"
+    shell: "find . -type f -name .gitignore -exec rm {} \\;"
     args:
       chdir: "{{ stage_path }}"
     tags: prepare_commit
