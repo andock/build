@@ -60,8 +60,8 @@
     when:
       - remove_gitignore_during_build == False
 
-  - name: "Prepare commit: Remove all gitignore"
-    shell: "ls | xargs find 2>/dev/null | egrep /\\.gitignore$ | xargs rm -f"
+  - name: "Prepare commit: Remove gitignore files"
+    shell: "find . -type f -name .gitignore -exec rm {} \;"
     args:
       chdir: "{{ stage_path }}"
     tags: prepare_commit
