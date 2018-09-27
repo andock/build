@@ -3,13 +3,13 @@
   - name: "Create build directory"
     file:
       state: directory
-      path: "{{ checkout_path }}"
+      path: "{{ build_path }}"
     tags: setup
 
   - name: "Clone or pull repository"
     git:
       repo: "{{ git_repository_path }}"
-      dest: "{{ checkout_path }}"
+      dest: "{{ build_path }}"
       version: "{{ branch }}"
       accept_hostkey: true
       force: yes
@@ -33,25 +33,25 @@
 
   - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
-  - name: "Remove old push directory. (If one exists)"
+  - name: "Cleanup stage directory."
     file:
       state: absent
-      path: "{{ push_path }}"
+      path: "{{ stage_path }}"
 
-  - name: "Copy to push directory"
-    command: "rsync -a {{ checkout_path }}/ {{ push_path }} --exclude {{ push_path }}"
+  - name: "Copy to stage directory"
+    command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
 
   - name: "Prepare commit: Register gitignores"
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     register: gitignore_to_check
     ignore_errors: yes
     tags: prepare_commit
 
   - name: "Prepare commit: Remove marker in gitignore \"#### BEGIN REMOVE ANDOCK ...\""
     blockinfile:
-      path: "{{ push_path }}/{{ item }}"
+      path: "{{ stage_path }}/{{ item }}"
       marker: "#### {mark} REMOVE ANDOCK ###"
       content: ""
     with_items: "{{ gitignore_to_check.stdout_lines }}"
@@ -63,7 +63,7 @@
   - name: "Prepare commit: Remove all gitignore"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.gitignore$ | xargs rm -f"
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
     when:
     - remove_gitignore_during_build == True
@@ -72,43 +72,43 @@
     command: git remote add remote "{{ git_artifact_repository_path }}" warn=no
     args:
       warn: false
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
 
   - name: "Prepare commit: Remove all git folders without the root .git directory"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
 
   - name: "Prepare commit: git add ."
     command: git add .
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
 
   - name: "Prepare commit: git config user.name"
     shell: git config user.name $(git --no-pager show -s --format='%an' HEAD)
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
 
   - name: "Prepare commit: git config user.email"
     shell: git config user.email $(git --no-pager show -s --format='%ae' HEAD)
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: prepare_commit
 
   - name: "Commit files"
     shell: "git commit --allow-empty -am \"Build: {{ ansible_date_time.iso8601 }}\""
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: commit
 
   - name: "Deploy to artifact repository"
     command: "git push --force remote {{ branch }}:{{ target_branch }}"
     args:
-      chdir: "{{ push_path }}"
+      chdir: "{{ stage_path }}"
     tags: push
 
   - name: "Run build done tasks."

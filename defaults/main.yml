@@ -7,11 +7,9 @@ project_home: "{{ andock_home }}/projects/{{ project_name }}"
 
 build_path: "{{ project_home }}/{{ project_name }}--{{ branch }}/{{ project_name }}--{{ branch }}__build"
 
+stage_path: "{{ build_path }}/andock-stage"
+
 git_artifact_repository_path:  "{{ project_home }}/repository/{{ project_name }}.git"
-
-checkout_path: "{{ build_path }}"
-
-push_path: "{{ build_path }}/andock-push"
 
 target_branch_suffix: ""
 
