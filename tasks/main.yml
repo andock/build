@@ -58,7 +58,7 @@
     tags: prepare_commit
     no_log: true
     when:
-      - remove_gitignore_during_build = false
+      - remove_gitignore_during_build == False
 
   - name: "Prepare commit: Remove all gitignore"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.gitignore$ | xargs rm -f"
@@ -66,7 +66,7 @@
       chdir: "{{ push_path }}"
     tags: prepare_commit
     when:
-    - remove_gitignore_during_build = true
+    - remove_gitignore_during_build == True
 
   - name: "Prepare commit: Add git remote \"{{ git_artifact_repository_path }}\""
     command: git remote add remote "{{ git_artifact_repository_path }}" warn=no
