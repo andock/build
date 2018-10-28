@@ -35,6 +35,7 @@ script:
   - cd /home/travis/andock/projects/demo-project
   # Check if build folder exists
   - cd master
+  - ls
   - cd demo-project--master__build
   - cd ..
   - cd ..
