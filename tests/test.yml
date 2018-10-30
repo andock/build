@@ -3,7 +3,8 @@
   hosts: localhost
   roles:
     - role: build
-      project_name: "demo-project"
+      project_name: "demo-project-name"
+      project_id: "demo-project"
       git_repository_path: https://github.com/andock/demo-project.git
       branch: "master"
       hook_build_tasks: "hooks/build_tasks.yml"

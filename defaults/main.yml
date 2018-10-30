@@ -1,15 +1,17 @@
 ---
 # defaults file for drupal-git-deployment
 
+project_id: "{{ project_name }}"
+
 andock_home: "{{ ansible_env.HOME }}/andock"
 
-project_home: "{{ andock_home }}/projects/{{ project_name }}"
+project_home: "{{ andock_home }}/projects/{{ project_id }}"
 
-build_path: "{{ project_home }}/{{ branch }}/{{ project_name }}--{{ branch }}__build"
+build_path: "{{ project_home }}/{{ branch }}/{{ project_id }}--{{ branch }}__build"
 
 stage_path: "{{ build_path }}/andock-stage"
 
-git_artifact_repository_path:  "{{ project_home }}/repository/{{ project_name }}.git"
+git_artifact_repository_path:  "{{ project_home }}/repository/{{ project_id }}.git"
 
 target_branch_suffix: ""
 
