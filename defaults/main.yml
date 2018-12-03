@@ -7,7 +7,7 @@ andock_home: "{{ ansible_env.HOME }}/andock"
 
 project_home: "{{ andock_home }}/projects/{{ project_id }}"
 
-build_path: "{{ project_home }}/{{ branch }}/{{ project_id }}--{{ branch }}__build"
+build_path: "{{ project_home }}/{{ branch }}/{{ branch }}-{{ project_id }}__build"
 
 stage_path: "{{ build_path }}/andock-stage"
 
