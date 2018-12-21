@@ -49,14 +49,15 @@
     ignore_errors: yes
     tags: prepare_commit
 
-  - name: "Prepare commit: Remove marker in gitignore \"#### BEGIN REMOVE ANDOCK ...\""
-    blockinfile:
-      path: "{{ stage_path }}/{{ item }}"
-      marker: "#### {mark} REMOVE ANDOCK ###"
-      content: ""
-    with_items: "{{ gitignore_to_check.stdout_lines }}"
-    tags: prepare_commit
-    no_log: true
+  - block:
+    - name: "Prepare commit: Remove marker in gitignore \"#### BEGIN REMOVE ANDOCK ...\""
+      blockinfile:
+        path: "{{ stage_path }}/{{ item }}"
+        marker: "#### {mark} REMOVE ANDOCK ###"
+        content: ""
+      with_items: "{{ gitignore_to_check.stdout_lines }}"
+      tags: prepare_commit
+      no_log: true
     when:
       - remove_gitignore_during_build == False
 
