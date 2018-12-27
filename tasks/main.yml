@@ -120,7 +120,8 @@
   rescue:
   - name: "Run build failed tasks."
     import_tasks: "{{ hook_build_failed_tasks | default(role_path ~ '/hooks/empty.yml') }}"
-
+  - fail:
+      msg: "Build failed"
   always:
     - name: Stop services.
       command: "fin stop"
@@ -129,6 +130,7 @@
         chdir: "{{ build_path }}"
       ignore_errors: yes
       when: fin_up_during_build == True
+      tags: cleanup
 
     - name: Remove services.
       command: "fin rm -f"
@@ -137,13 +139,16 @@
         chdir: "{{ build_path }}"
       ignore_errors: yes
       when: fin_up_during_build == True
+      tags: cleanup
 
     - name: "Prepare clean up"
       file: dest="{{ build_path }}" mode=777  recurse=yes
       when: cache_build == False
+      tags: cleanup
 
     - name: "Clean up: Remove build directory"
       file:
         state: absent
         path: "{{ build_path }}"
       when: cache_build == False
+      tags: cleanup
