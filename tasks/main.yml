@@ -31,12 +31,12 @@
       chdir: "{{ build_path }}"
     when: fin_up_during_build == True
 
-  - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
-
   - name: "Remove stage."
     file:
       state: absent
       path: "{{ stage_path }}"
+
+  - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
