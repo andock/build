@@ -9,7 +9,11 @@ project_home: "{{ andock_home }}/projects/{{ project_id }}"
 
 build_path: "{{ project_home }}/{{ branch }}/{{ branch }}-{{ project_id }}__build"
 
-stage_path: "{{ build_path }}/andock-stage"
+stage_folder: "andock-stage"
+
+stage_path: "{{ build_path }}/{{ stage_folder }}"
+
+skip_staging: false
 
 git_artifact_repository_path:  "{{ project_home }}/repository/{{ project_id }}.git"
 

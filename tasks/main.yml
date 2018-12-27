@@ -40,6 +40,8 @@
 
   - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
+    when:
+      - skip_staging == False
 
   - name: "Prepare commit: Register gitignores"
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
