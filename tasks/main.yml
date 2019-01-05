@@ -116,10 +116,13 @@
 
   - name: "Run build done tasks."
     import_tasks: "{{ hook_build_done_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+    tags: run_build_tasks
 
   rescue:
   - name: "Run build failed tasks."
     import_tasks: "{{ hook_build_failed_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+    tags: run_build_failed_tasks
+
   - fail:
       msg: "Build failed"
   always:

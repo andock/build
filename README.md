@@ -1,12 +1,9 @@
-andock-build (A drupal docksal build script.)
+[![Latest Release](https://img.shields.io/github/release/andock/build.svg?style=flat-square)](https://github.com/andock/andock/releases/latest) [![Build Status](https://img.shields.io/travis/andock/build.svg?style=flat-square)](https://travis-ci.org/andock/build)
+
+andock-build 
 =========
 
-**andock-build** is a Ansible role which:
-* Checks out.
-* Start docksal services.
-* Runs build tasks (like composer, npm etc.).  
-* Pushes all build artifacts to a target artifact repository.  
-* Remove docksal services.
+**andock-build** is a Ansible role which checks out the last commit of your branch, run all build hooks to include dependencies, run tests and pushes the built artifact to the git artifact repository.
   
 
 Requirements
@@ -48,11 +45,6 @@ If you want to update the role, you need to pass **--force** parameter when inst
 ```
 $ ansible-galaxy install --force andock.build
 ```
-
-Dependencies
-------------
-
-@TODO
 
 Example Playbook
 ----------------
@@ -100,7 +92,7 @@ build hooks under .ansible/hooks/build.yml
 License
 -------
 
-BSD
+GPL
 
 Author Information
 ------------------
