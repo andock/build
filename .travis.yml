@@ -23,8 +23,10 @@ before_install:
 install:
   # Install Ansible.
   - sudo pip install ansible==2.4
+  - sudo pip install ansible-lint
 
 script:
+  - ansible-lint .
   # Check the role/playbook's syntax.
   - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
 

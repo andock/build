@@ -16,32 +16,38 @@
     tags: checkout
     when: git_repository_path is defined
 
-  - name: "Check if a local build artifact repository exists"
-    stat:
-      path: "{{ git_artifact_repository_path }}"
-    register: artifact_repository_exists
-
   - name: "Create local build artifact repository"
     command: "git init --bare {{ git_artifact_repository_path }}"
-    when: artifact_repository_exists.stat.exists == False
+    args:
+      creates: "{{ git_artifact_repository_path }}"
+    tags:
+      - skip_ansible_lint
+      - init_repo
 
   - name: "Fin up"
     command: "fin up"
     args:
       chdir: "{{ build_path }}"
-    when: fin_up_during_build == True
+    when: fin_up_during_build
+    tags:
+      - fin_up
 
   - name: "Remove stage."
     file:
       state: absent
       path: "{{ stage_path }}"
+    tags:
+      - prepare_staging
 
   - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
 
   - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
     when:
-      - skip_staging == False
+      - not skip_staging
+    tags:
+      - staging
+      - skip_ansible_lint
 
   - name: "Prepare commit: Register gitignores"
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
@@ -61,7 +67,7 @@
       tags: prepare_commit
       no_log: true
     when:
-      - remove_gitignore_during_build == False
+      - not remove_gitignore_during_build
 
   - name: "Prepare commit: Remove gitignore files"
     shell: "find . -type f -name .gitignore -exec rm {} \\;"
@@ -69,14 +75,16 @@
       chdir: "{{ stage_path }}"
     tags: prepare_commit
     when:
-    - remove_gitignore_during_build == True
+    - remove_gitignore_during_build
 
   - name: "Prepare commit: Add git remote \"{{ git_artifact_repository_path }}\""
     command: git remote add remote "{{ git_artifact_repository_path }}" warn=no
     args:
       warn: false
       chdir: "{{ stage_path }}"
-    tags: prepare_commit
+    tags:
+      - prepare_commit
+      - skip_ansible_lint
 
   - name: "Prepare commit: Remove all git folders without the root .git directory"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"
@@ -88,43 +96,55 @@
     command: git add .
     args:
       chdir: "{{ stage_path }}"
-    tags: prepare_commit
+    tags:
+      - prepare_commit
+      - skip_ansible_lint
 
   - name: "Prepare commit: git config user.name"
     shell: git config user.name $(git --no-pager show -s --format='%an' HEAD)
     args:
       chdir: "{{ stage_path }}"
-    tags: prepare_commit
+    tags:
+      - prepare_commit
+      - skip_ansible_lint
 
   - name: "Prepare commit: git config user.email"
     shell: git config user.email $(git --no-pager show -s --format='%ae' HEAD)
     args:
       chdir: "{{ stage_path }}"
-    tags: prepare_commit
+    tags:
+      - prepare_commit
+      - skip_ansible_lint
 
   - name: "Commit files"
-    shell: "git commit --allow-empty -am \"Build: {{ ansible_date_time.iso8601 }}\""
+    command: "git commit --allow-empty -am \"Build: {{ ansible_date_time.iso8601 }}\""
     args:
       chdir: "{{ stage_path }}"
-    tags: commit
+    tags:
+      - commit
+      - skip_ansible_lint
 
   - name: "Deploy to artifact repository"
     command: "git push --force remote {{ branch }}:{{ target_branch }}"
     args:
       chdir: "{{ stage_path }}"
-    tags: push
+    tags:
+      - push
+      - skip_ansible_lint
 
-  - name: "Run build done tasks."
+  - name: "Run build done tasks"
     import_tasks: "{{ hook_build_done_tasks | default(role_path ~ '/hooks/empty.yml') }}"
     tags: run_build_tasks
 
   rescue:
-  - name: "Run build failed tasks."
+  - name: "Run build failed tasks"
     import_tasks: "{{ hook_build_failed_tasks | default(role_path ~ '/hooks/empty.yml') }}"
     tags: run_build_failed_tasks
 
-  - fail:
+  - name: "Build failed"
+    fail:
       msg: "Build failed"
+
   always:
     - name: Stop services.
       command: "fin stop"
@@ -132,8 +152,10 @@
         warn: false
         chdir: "{{ build_path }}"
       ignore_errors: yes
-      when: fin_up_during_build == True
-      tags: cleanup
+      when: fin_up_during_build
+      tags:
+        - cleanup
+        - fin_stop
 
     - name: Remove services.
       command: "fin rm -f"
@@ -141,17 +163,17 @@
         warn: false
         chdir: "{{ build_path }}"
       ignore_errors: yes
-      when: fin_up_during_build == True
+      when: fin_up_during_build
       tags: cleanup
 
     - name: "Prepare clean up"
-      file: dest="{{ build_path }}" mode=777  recurse=yes
-      when: cache_build == False
+      file: dest="{{ build_path }}" mode=0777  recurse=yes
+      when: not cache_build
       tags: cleanup
 
     - name: "Clean up: Remove build directory"
       file:
         state: absent
         path: "{{ build_path }}"
-      when: cache_build == False
+      when: not cache_build
       tags: cleanup
