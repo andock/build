@@ -29,3 +29,12 @@ remove_gitignore_during_build: true
 
 # Deprecated use build_path instead.
 checkout_path: build_path
+
+no_passwd: "/usr/sbin/adduser, /usr/sbin/userdel, /sbin/ip, /sbin/ifconfig, /usr/bin/tee"
+
+# Hooks:
+hook_build_done_tasks: ""
+
+hook_build_failed_tasks: ""
+
+hook_build_tasks: ""

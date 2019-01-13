@@ -6,14 +6,16 @@
       path: "{{ build_path }}"
     tags: setup
 
-  - name: "Clone or pull repository"
+  - name: "Update codebase"
     git:
       repo: "{{ git_repository_path }}"
       dest: "{{ build_path }}"
       version: "{{ branch }}"
       accept_hostkey: true
       force: yes
-    tags: checkout
+    tags:
+      - checkout
+      - print_action
     when: git_repository_path is defined
 
   - name: "Create local build artifact repository"
@@ -21,7 +23,6 @@
     args:
       creates: "{{ git_artifact_repository_path }}"
     tags:
-      - skip_ansible_lint
       - init_repo
 
   - name: "Fin up"
@@ -31,15 +32,24 @@
     when: fin_up_during_build
     tags:
       - fin_up
+      - print_action
 
-  - name: "Remove stage."
+  - name: "Remove stage"
     file:
       state: absent
       path: "{{ stage_path }}"
     tags:
       - prepare_staging
 
-  - import_tasks: "{{ hook_build_tasks | default(role_path ~ '/hooks/empty.yml') }}"
+
+  - block:
+    - name: "Run build tasks"
+      include_tasks: "{{ hook_build_tasks }}"
+      when:
+        - hook_build_tasks != ""
+    tags:
+      - print_action
+
 
   - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
@@ -47,7 +57,6 @@
       - not skip_staging
     tags:
       - staging
-      - skip_ansible_lint
 
   - name: "Prepare commit: Register gitignores"
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
@@ -84,7 +93,7 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
-      - skip_ansible_lint
+
 
   - name: "Prepare commit: Remove all git folders without the root .git directory"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"
@@ -98,7 +107,6 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
-      - skip_ansible_lint
 
   - name: "Prepare commit: git config user.name"
     shell: git config user.name $(git --no-pager show -s --format='%an' HEAD)
@@ -106,7 +114,6 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
-      - skip_ansible_lint
 
   - name: "Prepare commit: git config user.email"
     shell: git config user.email $(git --no-pager show -s --format='%ae' HEAD)
@@ -114,7 +121,6 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
-      - skip_ansible_lint
 
   - name: "Commit files"
     command: "git commit --allow-empty -am \"Build: {{ ansible_date_time.iso8601 }}\""
@@ -122,24 +128,32 @@
       chdir: "{{ stage_path }}"
     tags:
       - commit
-      - skip_ansible_lint
+      - print_action
 
-  - name: "Deploy to artifact repository"
+  - name: "Push to artifact repository"
     command: "git push --force remote {{ branch }}:{{ target_branch }}"
     args:
       chdir: "{{ stage_path }}"
     tags:
       - push
-      - skip_ansible_lint
-
-  - name: "Run build done tasks"
-    import_tasks: "{{ hook_build_done_tasks | default(role_path ~ '/hooks/empty.yml') }}"
-    tags: run_build_tasks
+      - print_action
+  - block:
+    - name: "Run build done tasks"
+      include_tasks: "{{ hook_build_done_tasks }}"
+    tags:
+      - run_build_tasks
+      - print_action
+    when: hook_build_done_tasks
 
   rescue:
-  - name: "Run build failed tasks"
-    import_tasks: "{{ hook_build_failed_tasks | default(role_path ~ '/hooks/empty.yml') }}"
-    tags: run_build_failed_tasks
+  - block:
+    - name: "Run build failed tasks"
+      include_tasks: "{{ hook_build_failed_tasks }}"
+    tags:
+      - run_build_failed_tasks
+      - print_action
+    when:
+      - hook_build_failed_tasks
 
   - name: "Build failed"
     fail:
@@ -156,6 +170,7 @@
       tags:
         - cleanup
         - fin_stop
+        - print_action
 
     - name: Remove services.
       command: "fin rm -f"
@@ -171,9 +186,11 @@
       when: not cache_build
       tags: cleanup
 
-    - name: "Clean up: Remove build directory"
+    - name: "Clean build caches"
       file:
         state: absent
         path: "{{ build_path }}"
       when: not cache_build
-      tags: cleanup
+      tags:
+        - cleanup
+        - print_action
