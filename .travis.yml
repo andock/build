@@ -28,7 +28,7 @@ install:
 script:
   - ansible-lint .
   - mkdir -p ~/.andock
-  - cp tests/version.env ~/andock/version.env
+  - cp tests/version.env ~/.andock/version.env
 
   # Check the role/playbook's syntax.
   - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
@@ -37,11 +37,11 @@ script:
   - ansible-playbook -i tests/inventory tests/test.yml --connection=local
 
   # Check if project folder exists
-  - cd /home/travis/andock/projects/demo-project
+  - cd /home/travis/andock/projects/test-project
   # Check if build folder exists
   - cd master
   - ls
-  - cd master-demo-project__build
+  - cd master-test-project__build
   - cd ..
   - cd ..
   # Check if repository exists
