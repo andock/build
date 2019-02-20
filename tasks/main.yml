@@ -1,7 +1,7 @@
 ---
 - name: "Check Andock Server Version"
   slurp:
-    src: /home/andock/.andock/version
+    src: "{{ andock_conf }}/version"
   register: andock_server_version
   tags: ['init','up','update','test','stop','rm','exec','letsencrypt']
 
