@@ -22,7 +22,7 @@ before_install:
 
 install:
   # Install Ansible.
-  - sudo pip install ansible==2.4
+  - sudo pip install ansible==2.6
   - sudo pip install ansible-lint
 
 script:
