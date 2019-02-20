@@ -27,6 +27,9 @@ install:
 
 script:
   - ansible-lint .
+  - mkdir -p ~/.andock
+  - cp tests/version.env ~/andock/version.env
+
   # Check the role/playbook's syntax.
   - ansible-playbook -i tests/inventory tests/test.yml --syntax-check
 

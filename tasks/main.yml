@@ -1,4 +1,22 @@
 ---
+- name: "Check Andock Server Version"
+  slurp:
+    src: /home/andock/.andock/version.env
+  register: andock_server_version
+  tags: ['init','up','update','test','stop','rm','exec','letsencrypt']
+
+- name: "Andock Server Version:"
+  debug:
+    msg: "{{ andock_server_version['content']|b64decode }}"
+  tags: ['print_action','init','up','update','test','stop','rm','exec','letsencrypt']
+
+- name: "Andock Server is not up to date"
+  fail:
+    msg: "Minimum required Andock Server Versin: {{ ANDOCK_MIN_SERVER_VERSIOM }}. Installed: {{ andock_server_version['content']|b64decode }}"
+  tags: ['print_action','init','up','update','test','stop','rm','exec','letsencrypt']
+  when:
+    - andock_server_version['content']|b64decode is version(ANDOCK_MIN_SERVER_VERSIOM, '<')
+
 - block:
   - name: "Create build directory"
     file:
