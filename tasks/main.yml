@@ -77,6 +77,14 @@
     tags:
       - print_action
 
+  - block:
+    - name: "Run build test tasks"
+      include_tasks: "{{ hook_build_test_tasks }}"
+      when:
+        - hook_build_test_tasks != ""
+    tags:
+      - print_action
+      - run_build_test_tasks
 
   - name: "Stage files"
     command: "rsync -a {{ build_path }}/ {{ stage_path }} --exclude {{ stage_path }}"
@@ -120,7 +128,6 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
-
 
   - name: "Prepare commit: Remove all git folders without the root .git directory"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"

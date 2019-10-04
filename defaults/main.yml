@@ -43,3 +43,5 @@ hook_build_done_tasks: ""
 hook_build_failed_tasks: ""
 
 hook_build_tasks: ""
+
+hook_build_test_tasks: ""
