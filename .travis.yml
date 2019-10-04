@@ -54,7 +54,6 @@ script:
   - cd demo-project
   - cd vendor
   - cd ..
-  - cat .dockal/docksal-local.env
 
 
 cache:

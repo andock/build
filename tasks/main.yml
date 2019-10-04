@@ -41,6 +41,12 @@
     tags:
       - init_repo
 
+  - name: "Create docksal-local.env"
+    template:
+      src: "{{ docksal_local_env_path }}"
+      dest: "{{ build_path }}/.docksal/docksal-local.env"
+    tags: ['fin_up']
+
   - name: "Fin up"
     command: "fin up"
     args:
@@ -50,10 +56,10 @@
       - fin_up
       - print_action
 
-  - name: "Create docksal-local.env"
-    template:
-      src: "{{ docksal_local_env_path }}"
-      dest: "{{ build_path }}/.docksal/docksal-local.env"
+  - name: "Remove docksal-local.env"
+    file:
+      state: absent
+      path: "{{ build_path }}/.docksal/docksal-local.env"
     tags: ['fin_up']
 
   - name: "Remove stage"
