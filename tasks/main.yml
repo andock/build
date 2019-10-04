@@ -50,6 +50,12 @@
       - fin_up
       - print_action
 
+  - name: "Create docksal-local.env"
+    template:
+      src: "{{ docksal_local_env_path }}"
+      dest: "{{ build_path }}/.docksal/docksal-local.env"
+    tags: ['fin_up']
+
   - name: "Remove stage"
     file:
       state: absent

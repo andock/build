@@ -1,6 +1,9 @@
 ---
 # defaults file for drupal-git-deployment
 
+# Path to ansible template for docksal-local.env
+docksal_local_env_path: templates/.docksal/docksal-local.env
+
 project_id: "{{ project_name }}"
 
 andock_home: "{{ ansible_env.HOME }}/andock"

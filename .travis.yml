@@ -53,6 +53,8 @@ script:
   - git clone /home/travis/andock/projects/demo-project/repository/demo-project.git
   - cd demo-project
   - cd vendor
+  - cd ..
+  - cat .dockal/docksal-local.env
 
 
 cache:
