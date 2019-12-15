@@ -32,7 +32,9 @@
     tags:
       - checkout
       - print_action
+      - cleanup_repository
     when: git_repository_path is defined
+
 
   - name: "Create local build artifact repository"
     command: "git init --bare {{ git_artifact_repository_path }}"
@@ -82,6 +84,7 @@
       include_tasks: "{{ hook_build_test_tasks }}"
       when:
         - hook_build_test_tasks != ""
+        - not skip_build_test_tasks
     tags:
       - print_action
       - run_build_test_tasks
@@ -92,6 +95,7 @@
       - not skip_staging
     tags:
       - staging
+      - cleanup_repository
 
   - name: "Prepare commit: Register gitignores"
     shell: "find 2>/dev/null | egrep /\\.gitignore$"
@@ -128,6 +132,16 @@
       chdir: "{{ stage_path }}"
     tags:
       - prepare_commit
+      - cleanup_repository
+
+  - name: "Cleanup artifact branch"
+    command: "git push --delete remote {{ target_branch }}"
+    args:
+      chdir: "{{ stage_path }}"
+    when: not cache_build
+    tags:
+      - cleanup_repository
+      - print_action
 
   - name: "Prepare commit: Remove all git folders without the root .git directory"
     shell: "ls | xargs find 2>/dev/null | egrep /\\.git$ | xargs rm -rf"
@@ -171,6 +185,7 @@
     tags:
       - push
       - print_action
+
   - block:
     - name: "Run build done tasks"
       include_tasks: "{{ hook_build_done_tasks }}"
